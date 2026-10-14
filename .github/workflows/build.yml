@@ -1,0 +1,57 @@
+name: Build Hush Hollow APK
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rebuild the project folders from the uploaded files
+        run: |
+          set -e
+          A=app/src/main
+          mkdir -p $A/assets $A/java/com/pradipto/hushhollow $A/res/values $A/res/mipmap-xhdpi
+          [ -f MainActivity.java ] && mv MainActivity.java $A/java/com/pradipto/hushhollow/
+          [ -f AndroidManifest.xml ] && mv AndroidManifest.xml $A/
+          [ -f styles.xml ] && mv styles.xml $A/res/values/
+          [ -f ic_launcher.png ] && mv ic_launcher.png $A/res/mipmap-xhdpi/
+          [ -f index.html ] && mv index.html $A/assets/
+          for f in *.js; do [ -f "$f" ] && mv "$f" $A/assets/; done
+          cat > settings.gradle <<'EOF'
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositories { google(); mavenCentral() } }
+          rootProject.name = "HushHollow"
+          include ':app'
+          EOF
+          cat > build.gradle <<'EOF'
+          plugins { id 'com.android.application' version '8.5.2' apply false }
+          EOF
+          printf 'org.gradle.jvmargs=-Xmx2048m\nandroid.useAndroidX=false\n' > gradle.properties
+          cat > app/build.gradle <<'EOF'
+          plugins { id 'com.android.application' }
+          android {
+              namespace 'com.pradipto.hushhollow'
+              compileSdk 34
+              defaultConfig {
+                  applicationId "com.pradipto.hushhollow"
+                  minSdk 24
+                  targetSdk 34
+                  versionCode 1
+                  versionName "1.0"
+              }
+              buildTypes { release { minifyEnabled false } }
+              compileOptions { sourceCompatibility JavaVersion.VERSION_1_8; targetCompatibility JavaVersion.VERSION_1_8 }
+          }
+          EOF
+          find app -type f | sort
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: 8.9 }
+      - run: gradle assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HushHollow-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
