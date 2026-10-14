@@ -1,0 +1,21 @@
+HUSH HOLLOW (Android) - a dreamcore experience
+Created by Pradipto Chaudhury
+
+This is the complete Android project. An .apk has to be compiled by the Android toolchain,
+so pick ONE of the two ways below. Both are free.
+
+=== A) Android Studio (on a PC/Mac) ===
+1. Install Android Studio (developer.android.com/studio).
+2. File > Open > choose this HushHollowAndroid folder. Let it sync (first time downloads a few things).
+3. Build > Build Bundle(s) / APK(s) > Build APK(s).
+4. Click "locate" in the popup: app-debug.apk is your game. Send it to your phone and install it
+   (allow "Install unknown apps" for your file manager / browser when asked).
+
+=== B) No install: build it on GitHub (free) ===
+1. Make a free account at github.com and create a new repository.
+2. Upload everything in this folder to it (drag & drop in the browser, keep the .github folder).
+3. Open the "Actions" tab > "Build Hush Hollow APK" > wait ~5 min until it turns green.
+4. Open the finished run > Artifacts > "HushHollow-apk" > download, unzip, install app-debug.apk on your phone.
+
+First launch needs internet for a few seconds (the app saves the 3D engine and fonts), then it works offline.
+Back button = pause menu. Plays in landscape.
