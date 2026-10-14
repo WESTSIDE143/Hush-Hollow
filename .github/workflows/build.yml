@@ -47,7 +47,14 @@ jobs:
           find app -type f | sort
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 17 }
-      - uses: android-actions/setup-android@v3
+      - name: Prepare Android SDK (preinstalled on GitHub runners)
+        run: |
+          export SDK="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          echo "SDK at $SDK"
+          ls "$SDK" || true
+          mkdir -p "$SDK/licenses"
+          printf '\n24333f8a63b6825ea9c5514f83c2829b004d1fee\n84831b9409646a918e30573bab4c9c91346d8abd\nd975f751698a77b662f1254ddbeed3901e976f5a\n8933bad161af4178b1185d1a37fbf41ea5269c55\n' > "$SDK/licenses/android-sdk-license"
+          echo "sdk.dir=$SDK" > local.properties
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: 8.9 }
       - run: gradle assembleDebug --no-daemon
